@@ -1,0 +1,1199 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Filmmaker & Generative Director Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#08090c',
+                            card: '#111319',
+                            border: '#1f2430',
+                            accent: '#00f2fe',
+                            accentHover: '#4facfe',
+                            gold: '#ffb703',
+                            muted: '#8b949e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+
+    <style>
+        body {
+            background-color: #08090c;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #08090c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2430;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f2fe;
+        }
+
+
+        /* Image comparison slider styling */
+        .comparison-slider {
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        .comparison-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            overflow: hidden;
+            border-right: 2px solid #00f2fe;
+        }
+        .comparison-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #00f2fe;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
+            cursor: ew-resize;
+            z-index: 10;
+        }
+
+
+        .glass-nav {
+            background: rgba(8, 9, 12, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+
+        .card-hover-effect {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px -10px rgba(0, 242, 254, 0.15);
+            border-color: rgba(0, 242, 254, 0.4);
+        }
+
+
+        /* Hide scrollbars for dynamic clean horizontal scrolling */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col justify-between">
+
+
+    <!-- 1. HEADER & NAVIGATION -->
+    <header class="sticky top-0 z-40 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <div class="flex items-center gap-6">
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center gap-3 group shrink-0">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-mono font-bold text-black text-xl shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-clapperboard"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-bold tracking-wider text-white group-hover:text-cyan-400 transition-colors uppercase block leading-none">ML AI FILMMAKER</span>
+                        <span class="text-[10px] font-mono text-cyan-400 tracking-widest block uppercase mt-1">FILMMAKER & DIRECTING</span>
+                    </div>
+                </a>
+
+
+                <!-- Quick Navigation to Video Showcase -->
+                <a href="#videos" class="hidden sm:flex text-gray-300 hover:text-brand-accent transition-colors items-center gap-1.5 text-xs font-mono bg-brand-card px-3 py-1.5 rounded-full border border-brand-border hover:border-brand-accent">
+                    <i class="fa-solid fa-circle-play text-red-400 text-xs"></i>
+                    <span>Films & Videos</span>
+                </a>
+            </div>
+
+
+            <!-- Search Bar -->
+            <div class="hidden md:flex flex-1 max-w-md relative">
+                <input type="text" id="globalSearchInput" onkeyup="handleGlobalSearch()" placeholder="Search 100 shots, 35mm lenses, tools (Veo, Kling), concepts..." class="w-full bg-brand-card text-xs text-gray-200 pl-10 pr-4 py-2.5 rounded-full border border-brand-border focus:border-brand-accent focus:outline-none transition-all placeholder-gray-500">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+            </div>
+
+
+            <!-- Navigation Links -->
+            <nav class="flex items-center gap-6 text-sm font-medium">
+                <a href="#showcase" class="text-gray-300 hover:text-brand-accent transition-colors hidden lg:block">Showcase</a>
+                <a href="#vault" class="text-gray-300 hover:text-brand-accent transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-bookmark text-brand-accent text-xs"></i>
+                    <span>Knowledge Vault</span>
+                </a>
+                <a href="#pipeline" class="text-gray-300 hover:text-brand-accent transition-colors hidden xl:block">Pipeline</a>
+                <a href="#contact" class="px-4 py-2 text-xs font-semibold rounded-full bg-brand-accent text-black hover:bg-cyan-300 transition-all shadow-md shadow-cyan-500/20">Book Inquiry</a>
+            </nav>
+        </div>
+
+
+        <!-- Mobile Search -->
+        <div class="md:hidden px-4 pb-3">
+            <div class="relative">
+                <input type="text" id="mobileSearchInput" onkeyup="handleGlobalSearch()" placeholder="Search 100 shot types, tools, lenses..." class="w-full bg-brand-card text-xs text-gray-200 pl-9 pr-4 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-500 text-xs"></i>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="flex-grow">
+        <!-- 2. HERO SECTION -->
+        <section class="relative py-16 lg:py-24 overflow-hidden border-b border-brand-border">
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/20 via-brand-dark to-brand-dark"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid lg:grid-cols-12 gap-12 items-center">
+                    <!-- Left Hero Content -->
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/50 border border-cyan-500/30 text-cyan-400 text-xs font-mono">
+                            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                            GEN-3 / VEO 3.1 & KLING PIPELINE READY
+                        </div>
+                        
+                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                            Cinematic AI Storytelling & <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Pipeline Control</span>
+                        </h1>
+                        
+                        <p class="text-gray-400 text-base sm:text-lg max-w-2xl font-light leading-relaxed">
+                            Script-to-Screen Execution • Multi-Angle Character Lock • Camera Motion Framing • High-Fidelity Sound Stem Mixing.
+                        </p>
+
+
+                        <!-- Production Metrics -->
+                        <div class="grid grid-cols-3 gap-4 pt-4 border-t border-brand-border/60 max-w-lg mx-auto lg:mx-0">
+                            <div>
+                                <span class="block text-xl font-bold font-mono text-brand-accent">2-3 Days</span>
+                                <span class="text-[11px] text-gray-400">Turnaround / Episode</span>
+                            </div>
+                            <div>
+                                <span class="block text-xl font-bold font-mono text-brand-gold">100%</span>
+                                <span class="text-[11px] text-gray-400">Character Lock</span>
+                            </div>
+                            <div>
+                                <span class="block text-xl font-bold font-mono text-purple-400">100</span>
+                                <span class="text-[11px] text-gray-400">Cinematic Shot Types</span>
+                            </div>
+                        </div>
+
+
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                            <a href="#showcase" class="px-6 py-3 rounded-xl bg-brand-accent text-black font-semibold text-sm hover:bg-cyan-300 transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-play text-xs"></i> Explore Works
+                            </a>
+                            <!-- Universal Showreel Button with Dynamic Parameter -->
+                            <button onclick="openShowreel(SHOWREEL_VIDEO_URL)" class="px-6 py-3 rounded-xl bg-brand-card text-gray-200 border border-brand-border hover:border-brand-accent font-medium text-sm transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-film text-brand-accent"></i> Watch 60s Reel
+                            </button>
+                        </div>
+                    </div>
+
+
+                    <!-- Right Hero Media (Showreel Card) -->
+                    <div class="lg:col-span-5">
+                        <div class="relative rounded-2xl overflow-hidden border border-brand-border bg-brand-card group shadow-2xl">
+                            <div id="showreelPreviewFrame" class="relative bg-slate-900 flex items-center justify-center mx-auto w-full overflow-hidden" style="aspect-ratio: 9 / 16; max-height: 520px;">
+                                <img src="https://i.ytimg.com/vi/A4JoZQmiboo/oar3.jpg?sqp=-oaymwErCJUDEOAESFqQAgHyq4qpAxoIARUAAIhCyAEB2AEB4gEKCBgQAhgGOAFAAQ==&rs=AOn4CLAaSXM6N52Q-3XM_BUEF_Qt6bGySw" alt="Cinematic Preview" class="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity">
+                                <button onclick="openShowreel(SHOWREEL_VIDEO_URL)" class="absolute w-16 h-16 rounded-full bg-brand-accent/90 text-black flex items-center justify-center text-xl shadow-lg shadow-cyan-500/40 hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play ml-1"></i>
+                                </button>
+                            </div>
+                            <div class="p-4 bg-brand-card flex items-center justify-between border-t border-brand-border text-xs">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                    <span class="font-mono text-gray-300">SHOWREEL 2026 // MASTER CUT</span>
+                                </div>
+                                <span class="font-mono text-brand-accent">01:24</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 3B. CINEMATIC VIDEO & FILM SHOWCASE -->
+        <section id="videos" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-brand-border">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <span class="text-xs font-mono text-brand-accent tracking-widest uppercase">Motion & Sound Pipeline</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">Cinematic Video & Trailers Showcase</h2>
+                    <p class="text-xs sm:text-sm text-gray-400 mt-1">Full episodic cuts, spec commercials, and vertical micro-dramas in action.</p>
+                </div>
+            </div>
+
+
+            <!-- Video Grid -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Video Card 1 -->
+                <div class="bg-brand-card rounded-2xl border border-brand-border overflow-hidden space-y-4 p-4">
+                    <div class="aspect-video rounded-xl overflow-hidden bg-black border border-brand-border">
+                        <iframe src="https://www.youtube.com/embed/TlyBpUTx8yM" class="w-full h-full" allowfullscreen></iframe>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-red-600/20 text-red-400 border border-red-500/30">16:9 • AI GENERATED VIDEO</span>
+                            <span class="text-xs font-mono text-gray-400">SORA</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">AI GENERATED VIDEO</h3>
+                        <p class="text-xs text-gray-400">Generative video demonstration showcasing atmospheric rendering and temporal motion control.</p>
+                    </div>
+                </div>
+
+
+                <!-- Video Card 2 -->
+                <div class="bg-brand-card rounded-2xl border border-brand-border overflow-hidden space-y-4 p-4">
+                    <div class="aspect-video rounded-xl overflow-hidden bg-black border border-brand-border">
+                        <iframe src="https://www.youtube.com/embed/Qg-itznl0hc" class="w-full h-full" allowfullscreen></iframe>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-purple-600/20 text-purple-400 border border-purple-500/30">16:9 • CINEMATIC VIDEOS</span>
+                            <span class="text-xs font-mono text-gray-400">SORA</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">CINEMATIC VIDEOS</h3>
+                        <p class="text-xs text-gray-400">Multi-scene cinematic composition rendered with high-bitrate audio and lens control.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 3. FEATURED PROJECTS SHOWCASE -->
+        <section id="showcase" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Production Showcase</h2>
+                    <p class="text-xs sm:text-sm text-gray-400 mt-1">Categorized generative productions with character lock & prompt breakdowns.</p>
+                </div>
+                <div class="relative w-full md:w-80">
+                    <input type="text" id="showcaseSearchInput" onkeyup="handleShowcaseSearch()" placeholder="Search showcase projects..." class="w-full bg-brand-card text-xs text-gray-200 pl-9 pr-4 py-2.5 rounded-full border border-brand-border focus:border-brand-accent focus:outline-none transition-all placeholder-gray-500">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-500 text-xs"></i>
+                </div>
+            </div>
+
+
+            <!-- Category Filters Row -->
+            <div class="w-full overflow-x-auto pb-4 mb-8 no-scrollbar" id="categoryFilters">
+                <div class="flex items-center gap-2 w-max">
+                    <button onclick="filterProjects('all')" class="filter-btn active text-xs font-medium px-4 py-2 rounded-full border border-brand-accent bg-brand-accent text-black transition-all shrink-0">All Projects</button>
+                    <button onclick="filterProjects('episodic')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Episodic Series</button>
+                    <button onclick="filterProjects('shorts')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Short Films</button>
+                    <button onclick="filterProjects('vertical')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">9:16 Vertical</button>
+                    <button onclick="filterProjects('horizontal')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">16:9 Horizontal</button>
+                    <button onclick="filterProjects('spec')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Spec Ads & Trailers</button>
+                    <button onclick="filterProjects('character')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Character Turnarounds</button>
+                    <button onclick="filterProjects('scifi')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Sci-Fi & Cyberpunk</button>
+                    <button onclick="filterProjects('historical')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Historical Drama</button>
+                    <button onclick="filterProjects('thriller')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Thriller & Micro-Dramas</button>
+                    <button onclick="filterProjects('environments')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Environment Plates</button>
+                    <button onclick="filterProjects('motion')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Camera Motion Control</button>
+                    <button onclick="filterProjects('vfx')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">VFX & Composition</button>
+                    <button onclick="filterProjects('colorgrade')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">35mm Kodak Stock Grade</button>
+                    <button onclick="filterProjects('voice')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">AI Voice & Dubbing</button>
+                    <button onclick="filterProjects('score')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Music & Sound Stems</button>
+                    <button onclick="filterProjects('kling')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Kling 3.0 Omni</button>
+                    <button onclick="filterProjects('veo')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Google Veo 3.1</button>
+                    <button onclick="filterProjects('highsfield')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Highsfield AI</button>
+                    <button onclick="filterProjects('automation')" class="filter-btn text-xs font-medium px-4 py-2 rounded-full border border-brand-border bg-brand-card text-gray-300 hover:border-brand-accent transition-all shrink-0">Photoshop ExtendScript (.jsx)</button>
+                </div>
+            </div>
+
+
+            <!-- Projects Grid -->
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="projectsGrid">
+                <!-- Project Card 1 -->
+                <div class="project-card card-hover-effect bg-brand-card rounded-2xl border border-brand-border overflow-hidden cursor-pointer" data-category="episodic horizontal scifi kling" onclick="openProjectModal(1)">
+                    <div class="aspect-video relative overflow-hidden bg-gray-900">
+                        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-mono text-cyan-400 border border-cyan-500/30">16:9 • EPISODIC</div>
+                        <div class="absolute bottom-3 right-3 bg-black/80 px-2 py-0.5 rounded text-[10px] font-mono text-gray-300">EP 01-04</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="text-lg font-bold text-white group-hover:text-brand-accent">NEON DRIFT 2099</h3>
+                        <p class="text-xs text-gray-400 line-clamp-2">Sci-Fi cyberpunk thriller series exploring AI identity across consistent futuristic environments.</p>
+                        <div class="flex flex-wrap gap-1.5 pt-2">
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">Kling 3.0</span>
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">ElevenLabs</span>
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">ControlNet</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Project Card 2 -->
+                <div class="project-card card-hover-effect bg-brand-card rounded-2xl border border-brand-border overflow-hidden cursor-pointer" data-category="shorts horizontal historical veo" onclick="openProjectModal(2)">
+                    <div class="aspect-video relative overflow-hidden bg-gray-900">
+                        <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-mono text-brand-gold border border-amber-500/30">16:9 • SHORT FILM</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="text-lg font-bold text-white">THE LAST MONK</h3>
+                        <p class="text-xs text-gray-400 line-clamp-2">High-altitude cinematic narrative demonstrating 35mm film grain aesthetic and facial consistency.</p>
+                        <div class="flex flex-wrap gap-1.5 pt-2">
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">Veo 3.1</span>
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">Midjourney v6</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Project Card 3 -->
+                <div class="project-card card-hover-effect bg-brand-card rounded-2xl border border-brand-border overflow-hidden cursor-pointer" data-category="vertical thriller voice" onclick="openProjectModal(3)">
+                    <div class="aspect-video relative overflow-hidden bg-gray-900">
+                        <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-mono text-purple-400 border border-purple-500/30">9:16 • VERTICAL REEL</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="text-lg font-bold text-white">CHRONOS: MICRO-DRAMA</h3>
+                        <p class="text-xs text-gray-400 line-clamp-2">Fast-paced vertical episodic trailer optimized for TikTok & Shorts with synthetic audio dialogue.</p>
+                        <div class="flex flex-wrap gap-1.5 pt-2">
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">Runway Gen-3</span>
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">Suno AI</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Project Card 4 -->
+                <div class="project-card card-hover-effect bg-brand-card rounded-2xl border border-brand-border overflow-hidden cursor-pointer" data-category="spec horizontal highsfield" onclick="openProjectModal(4)">
+                    <div class="aspect-video relative overflow-hidden bg-gray-900">
+                        <img src="https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-mono text-green-400 border border-green-500/30">SPEC COMMERCIAL</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="text-lg font-bold text-white">AURA HYPERCAR</h3>
+                        <p class="text-xs text-gray-400 line-clamp-2">High-speed automotive spec commercial with reflections, hard surface modeling, and dynamic camera pans.</p>
+                        <div class="flex flex-wrap gap-1.5 pt-2">
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">Highsfield Soul</span>
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">AE Post</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Project Card 5 -->
+                <div class="project-card card-hover-effect bg-brand-card rounded-2xl border border-brand-border overflow-hidden cursor-pointer" data-category="character automation" onclick="openProjectModal(5)">
+                    <div class="aspect-video relative overflow-hidden bg-gray-900">
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                        <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-md text-[10px] font-mono text-pink-400 border border-pink-500/30">CHARACTER LOCK</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <h3 class="text-lg font-bold text-white">AGENT MAYA: TURNAROUNDS</h3>
+                        <p class="text-xs text-gray-400 line-clamp-2">Multi-angle facial & costume turnaround sheet proving character consistency across 50+ scenes.</p>
+                        <div class="flex flex-wrap gap-1.5 pt-2">
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">SDXL Lora</span>
+                            <span class="text-[10px] bg-brand-dark px-2.5 py-1 rounded-md text-gray-300 border border-brand-border font-mono">FaceID</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 4. CINEMATIC KNOWLEDGE VAULT (100 SHOTS TAXONOMY) -->
+        <section id="vault" class="py-16 bg-brand-dark border-t border-b border-brand-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="text-xs font-mono text-brand-accent tracking-widest uppercase">Director's AI Playbook</span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Cinematic Knowledge Vault</h2>
+                    <p class="text-sm text-gray-400 mt-2">An interactive breakdown of camera grammar, lens choices, angles, and 100 complete shot types used in AI prompt synthesis.</p>
+                </div>
+
+
+                <!-- Vault Main Navigation Tabs -->
+                <div class="flex items-center justify-center gap-2 sm:gap-4 border-b border-brand-border mb-8 overflow-x-auto pb-3">
+                    <button onclick="switchVaultTab('principles')" id="tab-principles" class="vault-tab-btn active px-4 py-2 rounded-xl font-medium text-xs sm:text-sm text-brand-accent bg-brand-card border border-brand-accent">Principles of Animation</button>
+                    <button onclick="switchVaultTab('shots')" id="tab-shots" class="vault-tab-btn px-4 py-2 rounded-xl font-medium text-xs sm:text-sm text-gray-400 hover:text-white border border-transparent">Camera Shot Sizes (100)</button>
+                    <button onclick="switchVaultTab('lenses')" id="tab-lenses" class="vault-tab-btn px-4 py-2 rounded-xl font-medium text-xs sm:text-sm text-gray-400 hover:text-white border border-transparent">Focal Length (mm)</button>
+                    <button onclick="switchVaultTab('angles')" id="tab-angles" class="vault-tab-btn px-4 py-2 rounded-xl font-medium text-xs sm:text-sm text-gray-400 hover:text-white border border-transparent">Angles & Motions</button>
+                </div>
+
+
+                <!-- VAULT TAB 1: 12 PRINCIPLES OF ANIMATION -->
+                <div id="vault-principles" class="vault-content space-y-6">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="principlesGrid"></div>
+                </div>
+
+
+                <!-- VAULT TAB 2: CAMERA SHOT SIZES (100 SHOTS COMPLETE) -->
+                <div id="vault-shots" class="vault-content hidden space-y-6">
+                    <div class="flex items-center gap-2 mb-6 flex-wrap">
+                        <span class="text-xs text-gray-400 mr-2 font-mono">FILTER SUBJECT:</span>
+                        <button onclick="filterShotsSubject('all')" class="shot-sub-filter text-[11px] px-3 py-1 rounded-full bg-brand-accent text-black font-semibold">All Subjects</button>
+                        <button onclick="filterShotsSubject('face')" class="shot-sub-filter text-[11px] px-3 py-1 rounded-full bg-brand-card text-gray-300 border border-brand-border">Person Face</button>
+                        <button onclick="filterShotsSubject('character')" class="shot-sub-filter text-[11px] px-3 py-1 rounded-full bg-brand-card text-gray-300 border border-brand-border">Full Character</button>
+                        <button onclick="filterShotsSubject('environment')" class="shot-sub-filter text-[11px] px-3 py-1 rounded-full bg-brand-card text-gray-300 border border-brand-border">Environment</button>
+                        <button onclick="filterShotsSubject('prop')" class="shot-sub-filter text-[11px] px-3 py-1 rounded-full bg-brand-card text-gray-300 border border-brand-border">Props & Detail</button>
+                    </div>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="shotsGrid"></div>
+                </div>
+
+
+                <!-- VAULT TAB 3: LENS FOCAL LENGTH (mm) -->
+                <div id="vault-lenses" class="vault-content hidden space-y-6">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="lensesGrid"></div>
+                </div>
+
+
+                <!-- VAULT TAB 4: CAMERA ANGLES & MOVEMENTS -->
+                <div id="vault-angles" class="vault-content hidden space-y-6">
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="anglesGrid"></div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 5. PRODUCTION PIPELINE & TECH STACK -->
+        <section id="pipeline" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white">Generative Toolchain & Stack</h2>
+                <p class="text-xs sm:text-sm text-gray-400 mt-1">Multi-tool orchestration for maximum character consistency and cinematic dynamic motion control.</p>
+            </div>
+
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div class="p-4 bg-brand-card rounded-xl border border-brand-border text-center space-y-2">
+                    <i class="fa-solid fa-video text-brand-accent text-2xl"></i>
+                    <h4 class="text-xs font-bold text-white">Kling 3.0 Omni</h4>
+                    <p class="text-[10px] text-gray-400">Physics & Motion</p>
+                </div>
+                <div class="p-4 bg-brand-card rounded-xl border border-brand-border text-center space-y-2">
+                    <i class="fa-solid fa-person-running text-brand-gold text-2xl"></i>
+                    <h4 class="text-xs font-bold text-white">Higgsfield AI</h4>
+                    <p class="text-[10px] text-gray-400">Physics-Based Motion Control</p>
+                </div>
+                <div class="p-4 bg-brand-card rounded-xl border border-brand-border text-center space-y-2">
+                    <i class="fa-solid fa-arrows-up-down-left-right text-brand-gold text-2xl"></i>
+                    <h4 class="text-xs font-bold text-white">Runway Gen-3 Alpha</h4>
+                    <p class="text-[10px] text-gray-400">Camera Control Vectors</p>
+                </div>
+                <div class="p-4 bg-brand-card rounded-xl border border-brand-border text-center space-y-2">
+                    <i class="fa-solid fa-cubes text-brand-gold text-2xl"></i>
+                    <h4 class="text-xs font-bold text-white">OpenAI Sora</h4>
+                    <p class="text-[10px] text-gray-400">3D Temporal Consistency</p>
+                </div>
+                <div class="p-4 bg-brand-card rounded-xl border border-brand-border text-center space-y-2">
+                    <i class="fa-solid fa-eye text-brand-gold text-2xl"></i>
+                    <h4 class="text-xs font-bold text-white">Kling AI</h4>
+                    <p class="text-[10px] text-gray-400">Ultra-Realistic Faces</p>
+                </div>
+                <div class="p-4 bg-brand-card rounded-xl border border-brand-border text-center space-y-2">
+                    <i class="fa-solid fa-palette text-brand-gold text-2xl"></i>
+                    <h4 class="text-xs font-bold text-white">Midjourney v6</h4>
+                    <p class="text-[10px] text-gray-400">Concept Art & Storyboards</p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 6. CONTACT & BOOKING SECTION -->
+        <section id="contact" class="py-16 bg-brand-card border-t border-brand-border">
+            <div class="max-w-4xl mx-auto px-4 text-center space-y-6">
+                <h2 class="text-3xl font-extrabold text-white">Ready to Execute Your Next AI Film?</h2>
+                <p class="text-sm text-gray-400 max-w-xl mx-auto">Available for directorial hiring, episodic generative series production, spec ads, and studio pipeline consulting.</p>
+                
+                <div class="flex flex-wrap justify-center gap-4 pt-4">
+                    <a href="mailto:lakhwinderdasslakha10@gmail.com" class="px-8 py-3.5 rounded-full bg-brand-accent text-black font-bold text-sm hover:bg-cyan-300 transition-all shadow-lg shadow-cyan-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-envelope"></i> Send Direct Inquiry
+                    </a>
+                    <button onclick="copyToClipboard('lakhwinderdasslakha10@gmail.com', 'Email copied!')" class="px-6 py-3.5 rounded-full bg-brand-dark text-gray-300 border border-brand-border hover:border-brand-accent text-sm font-medium transition-all">
+                        Copy Email
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="py-8 bg-brand-dark border-t border-brand-border text-xs text-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 ML AI FILMMAKER FILMS. All AI generated assets & prompt blueprints protected.</p>
+            <div class="flex items-center gap-6">
+                <a href="#" class="hover:text-brand-accent">Vimeo</a>
+                <a href="#" class="hover:text-brand-accent">YouTube</a>
+                <a href="#" class="hover:text-brand-accent">GitHub Pages</a>
+                <a href="#" class="hover:text-brand-accent">LinkedIn</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- MODAL 1: UNIVERSAL SHOWREEL POPUP (DYNAMIC ASPECT RATIO CONTAINER) -->
+    <div id="showreelModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="relative w-full flex items-center justify-center">
+            <!-- Close Button -->
+            <button onclick="closeModal('showreelModal')" class="absolute -top-12 right-0 sm:right-4 z-10 w-9 h-9 rounded-full bg-brand-dark border border-brand-border text-gray-300 hover:text-white flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+            
+            <!-- Dynamic Universal Container -->
+            <div id="showreelContainer" class="relative w-full max-w-4xl bg-black rounded-2xl overflow-hidden shadow-2xl border border-brand-border" style="aspect-ratio: 9 / 16;">
+                <iframe
+                    id="showreelIframe"
+                    src=""
+                    title="Mohit Lakha — Showreel 2026"
+                    class="absolute inset-0 block w-full h-full"
+                    style="border:0;"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 2: PROJECT DETAIL & COMPARISON MODAL (FIXED STICKY HEADER) -->
+    <div id="projectModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-card border border-brand-border rounded-2xl w-full max-w-4xl my-8 overflow-hidden relative max-h-[90vh] flex flex-col">
+            
+            <div class="sticky top-0 z-50 bg-brand-card/95 backdrop-blur-md px-6 py-4 sm:px-8 border-b border-brand-border/60 flex items-center justify-between">
+                <div>
+                    <span id="modalCategoryBadge" class="text-[10px] font-mono px-2.5 py-1 rounded bg-brand-accent/20 text-brand-accent border border-brand-accent/40">CATEGORY</span>
+                    <h2 id="modalTitle" class="text-xl sm:text-2xl font-bold text-white mt-1">Project Title</h2>
+                </div>
+                <button onclick="closeModal('projectModal')" class="w-10 h-10 rounded-full bg-brand-dark border border-brand-border text-gray-300 hover:text-white hover:border-brand-accent flex items-center justify-center transition-all shrink-0">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 sm:p-8 space-y-6 overflow-y-auto flex-1">
+                <p id="modalDescription" class="text-xs sm:text-sm text-gray-400">Detailed narrative logline goes here.</p>
+
+
+                <div>
+                    <h4 class="text-xs font-mono text-brand-accent mb-2">BEFORE/AFTER: RAW PLATE VS FINAL COLOR GRADE & CLEANUP</h4>
+                    <div class="comparison-slider h-64 sm:h-80 rounded-xl border border-brand-border" id="sliderBox">
+                        <img id="afterImage" src="" class="w-full h-full object-cover">
+                        <div class="comparison-before" id="beforeBox">
+                            <img id="beforeImage" src="" class="w-full h-full object-cover grayscale opacity-70">
+                        </div>
+                        <div class="comparison-handle" id="sliderHandle">
+                            <i class="fa-solid fa-arrows-left-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="space-y-3 pt-4 border-t border-brand-border">
+                    <h4 class="text-xs font-mono text-brand-accent">ASPECT RATIO VARIATIONS (1:1 TO 16:9 GALLERY)</h4>
+                    <div id="modalGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 max-h-96 overflow-y-auto p-1"></div>
+                </div>
+
+
+                <div class="bg-brand-dark p-4 rounded-xl border border-brand-border space-y-2">
+                    <span class="text-xs font-mono text-brand-gold">PRODUCTION TOOLCHAIN & SPECIFICATIONS</span>
+                    <p id="modalTechStack" class="text-xs font-mono text-gray-300">Kling 3.0 Omni • Kodak Vision3 500T • Multi-Angle Character Lock</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-brand-accent text-black font-semibold text-xs px-4 py-2.5 rounded-lg shadow-xl translate-y-20 opacity-0 transition-all duration-300">
+        Notification Message
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC DATABASE & UI FUNCTIONS -->
+    <script>
+        // --- 1. ANIMATION PRINCIPLES DATA ---
+        const animationPrinciples = [
+            { name: "1. Squash and Stretch", desc: "Flexibility & weight recoil in facial muscles or bouncing props.", icon: "fa-compress" },
+            { name: "2. Anticipation", desc: "Preparation motion before action (wind-up before running).", icon: "fa-person-running" },
+            { name: "3. Staging", desc: "Directing user focus using cinematic light & silhouette placement.", icon: "fa-eye" },
+            { name: "4. Pose to Pose", desc: "Keyframe control between AI generation iterations.", icon: "fa-shoe-prints" },
+            { name: "5. Follow Through", desc: "Secondary momentum in hair, cloth, and fluid dynamics.", icon: "fa-wind" },
+            { name: "6. Slow In & Slow Out", desc: "Acceleration & deceleration curves in prompt panning.", icon: "fa-gauge-high" },
+            { name: "7. Arcs", desc: "Natural curved trajectories for limbs and camera tracks.", icon: "fa-route" },
+            { name: "8. Secondary Action", desc: "Micro facial twitches accompanying primary walking movement.", icon: "fa-face-smile" },
+            { name: "9. Timing", desc: "Frame density control for weight and gravity perception.", icon: "fa-stopwatch" },
+            { name: "10. Exaggeration", desc: "Amplified dramatic expression and surreal color pop.", icon: "fa-wand-magic" },
+            { name: "11. Solid Drawing / 3D Volume", desc: "Maintaining spatial consistency across multi-angle shots.", icon: "fa-cube" },
+            { name: "12. Appeal", desc: "Charismatic character lock and design aesthetic appeal.", icon: "fa-star" }
+        ];
+
+
+        // --- 2. COMPLETE 100 CINEMATIC SHOT TYPES DATABASE (10 CATEGORIES x 10 SHOTS) ---
+        const shotTypes = [
+            // 1. Environment Shots
+            { name: "Extreme Wide Shot (EWS)", size: "Extreme Wide", subject: "environment", desc: "Subject appears microscopic within a vast environment." },
+            { name: "Extreme Long Shot (ELS)", size: "Extreme Wide", subject: "environment", desc: "Environment dominates the entire frame completely." },
+            { name: "Wide Shot (WS)", size: "Wide", subject: "environment", desc: "Shows the subject within its full surroundings." },
+            { name: "Very Wide Shot (VWS)", size: "Very Wide", subject: "environment", desc: "Captures a broad landscape with subject visible." },
+            { name: "Establishing Shot", size: "Wide Scene", subject: "environment", desc: "Introduces location, atmosphere, and time of day." },
+            { name: "Master Shot", size: "Full Scene", subject: "environment", desc: "Captures the entire scene and spatial relationships." },
+            { name: "Long Shot (LS)", size: "Wide Context", subject: "environment", desc: "Shows full subject with surrounding environmental context." },
+            { name: "Extreme High-Angle Wide", size: "Overhead Wide", subject: "environment", desc: "Looks down over a large environment from high altitude." },
+            { name: "Bird's-Eye View", size: "Top-Down", subject: "environment", desc: "Direct 90-degree overhead view of a location." },
+            { name: "Aerial Shot", size: "Drone / High", subject: "environment", desc: "Captures broad environment sweeping from above." },
+
+
+            // 2. Full Character Shots
+            { name: "Full Shot (FS)", size: "Full Body", subject: "character", desc: "Character framed precisely from head to toe." },
+            { name: "Full Body Shot", size: "Full Body", subject: "character", desc: "Entire character body clearly visible in frame." },
+            { name: "Long Shot Character", size: "Full Body", subject: "character", desc: "Full character framed with environmental context." },
+            { name: "Medium Long Shot (MLS)", size: "Knees Up", subject: "character", desc: "Character framed from knees upward." },
+            { name: "Three-Quarter Shot", size: "Mid-Thigh Up", subject: "character", desc: "Framed from approximately mid-thigh upward." },
+            { name: "Cowboy Shot", size: "Thighs Up", subject: "character", desc: "Framed from mid-thigh or holster level upward." },
+            { name: "American Shot", size: "Western Thigh", subject: "character", desc: "Classic Western-style framing around the thighs." },
+            { name: "Knee Shot", size: "Knees Up", subject: "character", desc: "Character framed distinctly from knees upward." },
+            { name: "Wide Character Shot", size: "Full Body", subject: "character", desc: "Full character with additional surrounding negative space." },
+            { name: "Silhouette Shot", size: "Dark Outline", subject: "character", desc: "Character appears as a dark outline against backlight." },
+
+
+            // 3. Medium Character Shots
+            { name: "Medium Shot (MS)", size: "Waist Up", subject: "character", desc: "Standard dialogue framing from waist upward." },
+            { name: "Medium Full Shot", size: "Thighs Up", subject: "character", desc: "Shows most of the character's body." },
+            { name: "Medium Wide Shot", size: "Knees Up", subject: "character", desc: "Character occupies moderate spatial frame space." },
+            { name: "Medium Two-Shot", size: "Dialogue Pair", subject: "character", desc: "Two characters framed together waist up." },
+            { name: "Three-Person Shot", size: "Group Trio", subject: "character", desc: "Three characters in a single balanced frame." },
+            { name: "Group Shot", size: "Multi-Character", subject: "character", desc: "Multiple characters shown together in scene." },
+            { name: "Profile Medium Shot", size: "Side Profile", subject: "character", desc: "Character viewed waist up from the side." },
+            { name: "Back Medium Shot", size: "Rear Angle", subject: "character", desc: "Character viewed waist up from behind." },
+            { name: "Over-The-Shoulder (OTS)", size: "Dialogue", subject: "character", desc: "Looks past one character's shoulder toward another." },
+            { name: "Reverse OTS Shot", size: "Dialogue Flip", subject: "character", desc: "Opposite perspective of an over-the-shoulder shot." },
+
+
+            // 4. Face and Close-Up Shots
+            { name: "Medium Close-Up (MCU)", size: "Chest Up", subject: "face", desc: "Framed from chest upward focusing on reactions." },
+            { name: "Close-Up (CU)", size: "Shoulders Up", subject: "face", desc: "Face fills most of the frame to capture emotion." },
+            { name: "Tight Close-Up", size: "Face Tight", subject: "face", desc: "Extremely tight facial framing from chin to forehead." },
+            { name: "Extreme Close-Up (ECU)", size: "Feature Focus", subject: "face", desc: "Focuses tightly on a specific facial feature." },
+            { name: "Choker Shot", size: "Tight Face", subject: "face", desc: "Tight crop strictly from chin to forehead." },
+            { name: "Head-and-Shoulders Shot", size: "Standard Portrait", subject: "face", desc: "Head and shoulders clearly visible in frame." },
+            { name: "Headshot", size: "Facial Focus", subject: "face", desc: "Focuses primarily on the face and facial structure." },
+            { name: "Face Profile Shot", size: "Side View", subject: "face", desc: "Exact side view of the subject's face." },
+            { name: "Three-Quarter Face Shot", size: "45 Degree Face", subject: "face", desc: "Face turned approximately 45 degrees to camera." },
+            { name: "Front-Facing Portrait", size: "Direct Eye-Contact", subject: "face", desc: "Character looks directly forward toward camera." },
+
+
+            // 5. Eye and Micro Facial Shots
+            { name: "Italian Shot", size: "Eyes Crop", subject: "face", desc: "Tight Spaghetti Western crop emphasizing the eyes." },
+            { name: "Eyes-Only Shot", size: "Eyes Focus", subject: "face", desc: "Only the eyes and immediate surrounding area visible." },
+            { name: "Single-Eye ECU", size: "Micro Eye", subject: "face", desc: "Extreme close-up focusing on a single eye." },
+            { name: "Iris Detail Shot", size: "Micro Iris", subject: "face", desc: "Highlights detailed iris patterns and color texture." },
+            { name: "Pupil Detail Shot", size: "Micro Pupil", subject: "face", desc: "Focuses on pupil dilation and micro reflections." },
+            { name: "Eyebrow Detail Shot", size: "Micro Brow", subject: "face", desc: "Captures eyebrow movement and subtle expression." },
+            { name: "Lips Close-Up", size: "Mouth Focus", subject: "face", desc: "Focuses closely on the mouth and lips motion." },
+            { name: "Teeth Detail Shot", size: "Micro Expression", subject: "face", desc: "Highlights teeth or detailed facial expression." },
+            { name: "Nose Detail Shot", size: "Micro Texture", subject: "face", desc: "Focuses on nose shape, skin texture, and lighting." },
+            { name: "Facial Expression Shot", size: "Micro Muscle", subject: "face", desc: "Captures subtle emotional micro-expressions." },
+
+
+            // 6. Prop and Detail Shots
+            { name: "Insert Shot", size: "Prop Focus", subject: "prop", desc: "Highlights an important narrative object." },
+            { name: "Extreme Macro Shot", size: "Microscope", subject: "prop", desc: "Captures microscopic surface textures and details." },
+            { name: "Macro Detail Shot", size: "Texture Close-Up", subject: "prop", desc: "Shows small textures and intricate mechanical features." },
+            { name: "Prop Close-Up", size: "Object Focus", subject: "prop", desc: "Focuses closely on a specific prop element." },
+            { name: "Object Isolated Shot", size: "Isolated Item", subject: "prop", desc: "Object presented independently with key lighting." },
+            { name: "Hand Detail Shot", size: "Hand Action", subject: "prop", desc: "Focuses on hands performing a specific action." },
+            { name: "Finger Detail Shot", size: "Micro Fingers", subject: "prop", desc: "Highlights precise finger movements or triggers." },
+            { name: "Texture Shot", size: "Material Focus", subject: "prop", desc: "Emphasizes material surface quality (leather, metal)." },
+            { name: "Mechanism Detail Shot", size: "Gear / Tech", subject: "prop", desc: "Shows how an internal object or mechanism works." },
+            { name: "Document Insert Shot", size: "Paper / Screen", subject: "prop", desc: "Highlights a letter, paper document, or UI screen." },
+
+
+            // 7. Perspective and Point-of-View Shots
+            { name: "Point-of-View (POV)", size: "First Person", subject: "environment", desc: "Shows exactly what a character sees through their eyes." },
+            { name: "First-Person Shot", size: "FPS Angle", subject: "environment", desc: "Presents the scene from direct character perspective." },
+            { name: "Second-Person Perspective", size: "Addressed Subject", subject: "character", desc: "Frames the viewer as the addressed subject." },
+            { name: "Third-Person Shot", size: "External View", subject: "character", desc: "Shows the character from an external camera viewpoint." },
+            { name: "Overhead Shot", size: "Top-Down", subject: "environment", desc: "Camera positioned directly above the subject." },
+            { name: "High-Angle Shot", size: "Looking Down", subject: "character", desc: "Camera pitches downward making subject appear small." },
+            { name: "Low-Angle Shot", size: "Looking Up", subject: "character", desc: "Camera pitches upward making subject look imposing." },
+            { name: "Eye-Level Shot", size: "Neutral Height", subject: "character", desc: "Camera positioned at subject's exact eye level." },
+            { name: "Ground-Level Shot", size: "Floor Level", subject: "environment", desc: "Camera positioned close to floor or ground surface." },
+            { name: "Worm's-Eye View", size: "Extreme Upward", subject: "environment", desc: "Dramatic upward perspective from extreme ground level." },
+
+
+            // 8. Dynamic and Cinematic Shots
+            { name: "Dutch Angle Shot", size: "Tilted Frame", subject: "character", desc: "Camera tilted diagonally to create psychological tension." },
+            { name: "Tracking Shot", size: "Lateral Movement", subject: "character", desc: "Camera moves side-by-side alongside the subject." },
+            { name: "Dolly-In Shot", size: "Forward Track", subject: "character", desc: "Camera physically moves forward toward the subject." },
+            { name: "Dolly-Out Shot", size: "Backward Track", subject: "character", desc: "Camera physically moves backward away from subject." },
+            { name: "Crane Shot", size: "Vertical Elevation", subject: "environment", desc: "Camera moves vertically using a jib or crane arm." },
+            { name: "Arc Shot", size: "360 Orbit", subject: "character", desc: "Camera orbits in a smooth circular arc around subject." },
+            { name: "Push-In Shot", size: "Subtle Focus Push", subject: "face", desc: "Gradual movement toward the subject's face." },
+            { name: "Pull-Back Shot", size: "Reveal Pull", subject: "environment", desc: "Gradual movement backward revealing surrounding scene." },
+            { name: "Whip Pan Shot", size: "Fast Rotation", subject: "environment", desc: "Rapid horizontal camera pan creating motion blur." },
+            { name: "Follow Shot", size: "Chasing Motion", subject: "character", desc: "Camera tracks closely behind a moving character." },
+
+
+            // 9. Composition and Special Framing
+            { name: "Frame Within a Frame", size: "Architectural Framing", subject: "character", desc: "Subject framed through a window, door, or structure." },
+            { name: "Leading Lines Shot", size: "Visual Depth", subject: "environment", desc: "Uses environmental lines to guide eyes to subject." },
+            { name: "Negative Space Shot", size: "Minimalist", subject: "environment", desc: "Subject surrounded by vast empty visual space." },
+            { name: "Centered Composition", size: "Symmetrical Core", subject: "character", desc: "Subject placed squarely in the horizontal center." },
+            { name: "Symmetrical Shot", size: "Balanced Geometry", subject: "environment", desc: "Perfectly balanced visual composition on both sides." },
+            { name: "Asymmetrical Shot", size: "Off-Center Balance", subject: "character", desc: "Deliberately uneven visual framing for dynamic tension." },
+            { name: "Foreground Framing", size: "Layered Depth", subject: "character", desc: "Uses blurred foreground elements to frame subject." },
+            { name: "Deep Focus Shot", size: "Infinite Focus", subject: "environment", desc: "Foreground, midground, and background all in sharp focus." },
+            { name: "Shallow Focus Shot", size: "Bokeh Blur", subject: "face", desc: "Background is softly blurred while subject is razor-sharp." },
+            { name: "Split Diopter Shot", size: "Dual Focus Planes", subject: "character", desc: "Keeps two distinct background/foreground depth planes sharp." },
+
+
+            // 10. Special Cinematic Shots
+            { name: "Rack Focus Shot", size: "Focus Pull", subject: "prop", desc: "Focus shifts dynamically between two depth targets." },
+            { name: "Zoom-In Shot", size: "Focal Magnify", subject: "face", desc: "Lens focal length magnifies subject without camera move." },
+            { name: "Zoom-Out Shot", size: "Focal Widen", subject: "environment", desc: "Lens focal length widens field of view instantly." },
+            { name: "Crash Zoom Shot", size: "Rapid Snap Zoom", subject: "face", desc: "Sudden dramatic optical snap zoom toward subject." },
+            { name: "Vertigo (Dolly Zoom)", size: "Spatial Distortion", subject: "character", desc: "Dolly back while zooming in; background warps depth." },
+            { name: "Reflection Shot", size: "Mirrored Surface", subject: "character", desc: "Subject captured through water, glass, or glossy surface." },
+            { name: "Mirror Shot", size: "Glass Reflection", subject: "face", desc: "Subject framed indirectly through a mirror reflection." },
+            { name: "Shadow Shot", size: "Silhouette Shadow", subject: "prop", desc: "Uses cast shadows as the primary visual element." },
+            { name: "Silhouette Backlight", size: "Rim Glow", subject: "character", desc: "Subject outlined by strong rim backlighting." },
+            { name: "Freeze-Frame Shot", size: "Frozen Motion", subject: "character", desc: "Captures a high-speed action moment frozen in time." }
+        ];
+
+
+        // --- 3. LENSES DATA ---
+        const lenses = [
+            { mm: "8mm - 14mm", type: "Fisheye Ultra-Wide", desc: "Extreme spherical distortion & expansive spatial FOV." },
+            { mm: "16mm - 24mm", type: "Wide Angle", desc: "Captures environment scale with subtle edge expansion." },
+            { mm: "35mm", type: "Panavision Cinematic", desc: "Classic cinematic storytelling perspective with subtle context." },
+            { mm: "50mm", type: "Standard / Human Eye", desc: "Zero facial distortion; natural spatial proportions." },
+            { mm: "85mm - 105mm", type: "Portrait & Bokeh", desc: "Flattering facial geometry with creamy background separation." },
+            { mm: "135mm - 300mm", type: "Telephoto Compression", desc: "Pulls background elements right up against the character." }
+        ];
+
+
+        // --- 4. CAMERA ANGLES & MOVEMENTS DATA ---
+        const cameraAngles = [
+            { title: "Eye-Level Shot", cat: "Angle", desc: "Neutral camera height creating direct viewer empathy." },
+            { title: "Low Angle Shot", cat: "Angle", desc: "Camera points upward making character look heroic or menacing." },
+            { title: "High Angle Shot", cat: "Angle", desc: "Pitches downward making subject look vulnerable or small." },
+            { title: "Dutch Tilt / Angle", cat: "Angle", desc: "Tilted horizon creating psychological instability or tension." },
+            { title: "Bird's Eye View", cat: "Angle", desc: "90-degree overhead top-down perspective." },
+            { title: "Worm's Eye View", cat: "Angle", desc: "Ground-level camera looking straight up." },
+            { title: "Dolly Zoom (Vertigo)", cat: "Motion", desc: "Dolly forward while zooming out; alters spatial depth dynamically." },
+            { title: "Orbital Tracking 360", cat: "Motion", desc: "Camera rotates completely around character focal point." },
+            { title: "Whip Pan", cat: "Motion", desc: "Rapid rotational pan creating motion blur scene transition." }
+        ];
+
+
+        // --- 5. RENDER FUNCTIONS ---
+        function renderPrinciples() {
+            const container = document.getElementById('principlesGrid');
+            if(container) {
+                container.innerHTML = animationPrinciples.map(p => `
+                    <div class="bg-brand-card p-5 rounded-2xl border border-brand-border space-y-3 card-hover-effect">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-500/30 text-brand-accent flex items-center justify-center text-lg">
+                                <i class="fa-solid ${p.icon}"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-white">${p.name}</h3>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed">${p.desc}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+
+        function renderShots(filterSubject = 'all') {
+            const container = document.getElementById('shotsGrid');
+            if(container) {
+                const filtered = filterSubject === 'all' ? shotTypes : shotTypes.filter(s => s.subject === filterSubject);
+                container.innerHTML = filtered.map(s => `
+                    <div class="bg-brand-card p-5 rounded-2xl border border-brand-border space-y-3 card-hover-effect vault-card" data-title="{s.desc.toLowerCase()}">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-mono text-brand-gold bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/30 uppercase">${s.size}</span>
+                            <span class="text-[10px] font-mono text-gray-400 uppercase">${s.subject}</span>
+                        </div>
+                        <h3 class="text-base font-bold text-white">${s.name}</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">${s.desc}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+
+        function renderLenses() {
+            const container = document.getElementById('lensesGrid');
+            if(container) {
+                container.innerHTML = lenses.map(l => `
+                    <div class="bg-brand-card p-5 rounded-2xl border border-brand-border space-y-3 card-hover-effect">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-mono font-bold text-brand-accent">${l.mm}</span>
+                            <span class="text-[10px] font-mono text-gray-400 border border-brand-border px-2 py-0.5 rounded">LENS</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-white">${l.type}</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">${l.desc}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+
+        function renderAngles() {
+            const container = document.getElementById('anglesGrid');
+            if(container) {
+                container.innerHTML = cameraAngles.map(a => `
+                    <div class="bg-brand-card p-5 rounded-2xl border border-brand-border space-y-3 card-hover-effect">
+                        <span class="text-[10px] font-mono text-purple-400 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/30 uppercase">${a.cat}</span>
+                        <h3 class="text-base font-bold text-white">${a.title}</h3>
+                        <p class="text-xs text-gray-400 leading-relaxed">${a.desc}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+
+        // --- 6. TAB SWITCHING LOGIC ---
+        function switchVaultTab(tabName) {
+            document.querySelectorAll('.vault-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.vault-tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-brand-accent', 'bg-brand-card', 'border-brand-accent');
+                btn.classList.add('text-gray-400', 'border-transparent');
+            });
+            document.getElementById(`vault-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.classList.add('active', 'text-brand-accent', 'bg-brand-card', 'border-brand-accent');
+            activeBtn.classList.remove('text-gray-400', 'border-transparent');
+        }
+
+
+        function filterShotsSubject(subject) {
+            document.querySelectorAll('.shot-sub-filter').forEach(btn => {
+                btn.classList.remove('bg-brand-accent', 'text-black', 'font-semibold');
+                btn.classList.add('bg-brand-card', 'text-gray-300');
+            });
+            event.target.classList.add('bg-brand-accent', 'text-black', 'font-semibold');
+            event.target.classList.remove('bg-brand-card', 'text-gray-300');
+            renderShots(subject);
+        }
+
+
+        function filterProjects(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-brand-accent', 'text-black', 'border-brand-accent');
+                btn.classList.add('bg-brand-card', 'text-gray-300', 'border-brand-border');
+            });
+            event.currentTarget.classList.add('active', 'bg-brand-accent', 'text-black', 'border-brand-accent');
+            const cards = document.querySelectorAll('.project-card');
+            cards.forEach(card => {
+                const cardCategories = card.getAttribute('data-category') || '';
+                card.style.display = (cat === 'all' || cardCategories.includes(cat)) ? 'block' : 'none';
+            });
+        }
+
+
+        // --- 7. UNIVERSAL SHOWREEL: AUTOMATIC ASPECT-RATIO DETECTION ---
+        // Change the video URL only here. No aspect-ratio parameter is needed.
+        const SHOWREEL_VIDEO_URL = 'https://www.youtube.com/embed/A4JoZQmiboo';
+        // This specific YouTube Short is portrait (9:16). Set this to null to use metadata detection for another video.
+        const SHOWREEL_ASPECT_RATIO = 9 / 16;
+
+        function getShowreelAspectRatio(videoUrl) {
+            if (SHOWREEL_ASPECT_RATIO) return Promise.resolve(SHOWREEL_ASPECT_RATIO);
+            const url = new URL(videoUrl, window.location.href);
+            const host = url.hostname.replace(/^www\./, '');
+
+            // YouTube / Vimeo: read the actual player dimensions from oEmbed.
+            let oEmbedUrl = null;
+            if (host === 'youtube.com' || host === 'youtu.be' || host === 'm.youtube.com') {
+                let watchUrl = videoUrl;
+                if (host === 'youtu.be') watchUrl = `https://www.youtube.com/watch?v=${url.pathname.slice(1)}`;
+                else if (url.pathname.startsWith('/embed/')) watchUrl = `https://www.youtube.com/watch?v=${url.pathname.split('/')[2]}`;
+                oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(watchUrl)}&format=json`;
+            } else if (host === 'vimeo.com' || host === 'player.vimeo.com') {
+                oEmbedUrl = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(videoUrl)}`;
+            }
+
+            if (oEmbedUrl) {
+                return fetch(oEmbedUrl).then(response => {
+                    if (!response.ok) throw new Error('Video metadata unavailable');
+                    return response.json();
+                }).then(data => (data.width && data.height) ? data.width / data.height : 16 / 9);
+            }
+
+            // Direct MP4 / WebM / OGV links: read dimensions from media metadata.
+            if (/\.(mp4|webm|ogv)(\?.*)?$/i.test(url.href)) {
+                return new Promise(resolve => {
+                    const video = document.createElement('video');
+                    video.preload = 'metadata';
+                    video.onloadedmetadata = () => resolve(video.videoWidth / video.videoHeight || 16 / 9);
+                    video.onerror = () => resolve(16 / 9);
+                    video.src = videoUrl;
+                });
+            }
+
+            // Unknown embed providers may not expose dimensions; use a safe fallback.
+            return Promise.resolve(16 / 9);
+        }
+
+        function applyShowreelAspectRatio(ratio) {
+            const preview = document.getElementById('showreelPreviewFrame');
+            const container = document.getElementById('showreelContainer');
+            const safeRatio = (Number.isFinite(ratio) && ratio > 0) ? ratio : (SHOWREEL_ASPECT_RATIO || 16 / 9);
+
+            if (preview) {
+                preview.style.aspectRatio = String(safeRatio);
+                preview.style.width = `min(100%, ${520 * safeRatio}px)`;
+            }
+
+            if (container) {
+                container.style.aspectRatio = String(safeRatio);
+                container.style.width = `min(90vw, ${85 * safeRatio}vh)`;
+                container.style.maxHeight = '85vh';
+            }
+        }
+
+        async function openShowreel(videoUrl = SHOWREEL_VIDEO_URL) {
+            const modal = document.getElementById('showreelModal');
+            const iframe = document.getElementById('showreelIframe');
+            const container = document.getElementById('showreelContainer');
+
+            // Show the modal immediately, then resize it as soon as metadata is detected.
+            modal.classList.remove('hidden');
+            container.style.width = `min(90vw, ${85 * SHOWREEL_ASPECT_RATIO}vh)`;
+            container.style.aspectRatio = String(SHOWREEL_ASPECT_RATIO || (16 / 9));
+            // Build a standard YouTube embed URL with playback enabled.
+            // The iframe is absolutely positioned, so it fills the ratio-controlled container.
+            const embedUrl = new URL(videoUrl, window.location.href);
+            embedUrl.searchParams.set('autoplay', '1');
+            embedUrl.searchParams.set('playsinline', '1');
+            embedUrl.searchParams.set('rel', '0');
+            iframe.src = embedUrl.toString();
+
+            try {
+                const ratio = await getShowreelAspectRatio(videoUrl);
+                applyShowreelAspectRatio(ratio);
+            } catch (error) {
+                // Keep this Short's known 9:16 portrait ratio if metadata is unavailable.
+                applyShowreelAspectRatio(SHOWREEL_ASPECT_RATIO || (16 / 9));
+                console.warn('Could not detect showreel aspect ratio:', error);
+            }
+        }
+
+        // Automatically size the visible SHOWREEL 2026 preview on initial page load.
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const ratio = await getShowreelAspectRatio(SHOWREEL_VIDEO_URL);
+                applyShowreelAspectRatio(ratio);
+            } catch (error) {
+                applyShowreelAspectRatio(SHOWREEL_ASPECT_RATIO || (16 / 9));
+            }
+        });
+
+
+        // --- 8. PROJECT MODAL & GALLERY BUILDER ---
+        const galleryRatios = ["1:1", "16:9", "9:16", "4:3", "3:2", "2:3", "3:4", "4:5", "21:9", "5:4"];
+        function makeProjectGallery(folder) {
+            return galleryRatios.map((ratio, index) => ({
+                src: `images/projects/${folder}/shot_${String(index + 1).padStart(2, "0")}.jpg`,
+                ratio,
+                label: `VAR ${String(index + 1).padStart(2, "0")} • ${ratio}`
+            }));
+        }
+
+
+        const projectData = {
+            1: { title: "NEON DRIFT 2099", category: "16:9 • EPISODIC SERIES", desc: "Sci-Fi cyberpunk thriller series exploring AI identity across consistent futuristic environments.", beforeImg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80", afterImg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80", tech: "Kling 3.0 Omni • ElevenLabs • ControlNet • 35mm Anamorphic", gallery: makeProjectGallery("neon-drift-2099") },
+            2: { title: "THE LAST MONK", category: "16:9 • SHORT FILM", desc: "High-altitude cinematic narrative demonstrating 35mm film grain aesthetic and facial consistency.", beforeImg: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80", afterImg: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80", tech: "Google Veo 3.1 • Midjourney v6 • Kodak Vision3 Stock", gallery: makeProjectGallery("the-last-monk") },
+            3: { title: "CHRONOS: MICRO-DRAMA", category: "9:16 • VERTICAL REEL", desc: "Fast-paced vertical episodic trailer optimized for TikTok & Shorts with synthetic audio dialogue.", beforeImg: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80", afterImg: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80", tech: "Runway Gen-3 Alpha • Suno AI • ElevenLabs Dubbing", gallery: makeProjectGallery("chronos-micro-drama") },
+            4: { title: "AURA HYPERCAR", category: "SPEC COMMERCIAL", desc: "High-speed automotive spec commercial with reflections, hard surface modeling, and dynamic camera pans.", beforeImg: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1200&q=80", afterImg: "https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1200&q=80", tech: "Higgsfield Soul • Adobe After Effects Post • Ray-traced Reflections", gallery: makeProjectGallery("aura-hypercar") },
+            5: { title: "AGENT MAYA: TURNAROUNDS", category: "CHARACTER LOCK", desc: "Multi-angle facial & costume turnaround sheet proving character consistency across 50+ scenes.", beforeImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80", afterImg: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80", tech: "SDXL LoRA • FaceID ControlNet • Photoshop ExtendScript (.jsx)", gallery: makeProjectGallery("agent-maya-turnarounds") }
+        };
+
+
+        function openProjectModal(id) {
+            const data = projectData[id];
+            if (!data) return;
+
+
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalCategoryBadge').innerText = data.category;
+            document.getElementById('modalDescription').innerText = data.desc;
+            document.getElementById('beforeImage').src = data.beforeImg;
+            document.getElementById('afterImage').src = data.afterImg;
+            document.getElementById('modalTechStack').innerText = data.tech;
+
+
+            // Reset Slider
+            document.getElementById('beforeBox').style.width = '50%';
+            document.getElementById('sliderHandle').style.left = '50%';
+            
+            const galleryContainer = document.getElementById('modalGalleryGrid');
+            galleryContainer.innerHTML = '';
+
+
+            if(data.gallery) {
+                data.gallery.forEach((item) => {
+                    const tile = document.createElement('div');
+                    tile.className = 'relative group overflow-hidden rounded-lg border border-brand-border bg-black min-w-0';
+                    tile.style.aspectRatio = item.ratio.replace(':', ' / ');
+
+
+                    const image = document.createElement('img');
+                    image.src = item.src;
+                    image.alt = item.label;
+                    image.loading = 'lazy';
+                    image.className = 'w-full h-full object-contain transition-transform duration-300 group-hover:scale-105';
+                    image.onerror = () => {
+                        image.style.display = 'none';
+                        const fallback = document.createElement('div');
+                        fallback.className = 'absolute inset-0 flex items-center justify-center p-2 text-center text-[10px] font-mono text-gray-400';
+                        fallback.textContent = `ADD IMAGE: ${item.src}`;
+                        tile.appendChild(fallback);
+                    };
+
+
+                    const label = document.createElement('div');
+                    label.className = 'absolute bottom-1 left-1 right-1 bg-black/80 px-1.5 py-1 rounded text-[9px] font-mono text-cyan-400 text-center';
+                    label.textContent = item.label;
+
+
+                    tile.appendChild(image);
+                    tile.appendChild(label);
+                    galleryContainer.appendChild(tile);
+                });
+            }
+
+
+            document.getElementById('projectModal').classList.remove('hidden');
+        }
+
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            if (modalId === 'showreelModal') {
+                document.getElementById('showreelIframe').src = '';
+            }
+        }
+
+
+        // --- 9. REAL-TIME SEARCH LOGIC ---
+        function handleGlobalSearch() {
+            const query = (document.getElementById('globalSearchInput').value || document.getElementById('mobileSearchInput').value).toLowerCase().trim();
+            
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.style.display = (query === '' || card.innerText.toLowerCase().includes(query)) ? 'block' : 'none';
+            });
+
+
+            document.querySelectorAll('.vault-card').forEach(card => {
+                const title = card.getAttribute('data-title') || '';
+                const desc = card.getAttribute('data-desc') || '';
+                card.style.display = (query === '' || title.includes(query) || desc.includes(query)) ? 'block' : 'none';
+            });
+        }
+
+
+        function handleShowcaseSearch() {
+            const query = document.getElementById('showcaseSearchInput').value.toLowerCase().trim();
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.style.display = (query === '' || card.innerText.toLowerCase().includes(query)) ? 'block' : 'none';
+            });
+        }
+
+
+        // --- 10. UTILITY HELPERS ---
+        function copyToClipboard(text, msg) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast(msg);
+        }
+
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+
+        function initSlider() {
+            const box = document.getElementById('sliderBox');
+            const handle = document.getElementById('sliderHandle');
+            const before = document.getElementById('beforeBox');
+            let isDragging = false;
+            if (!box || !handle || !before) return;
+
+
+            const updateSlider = (x) => {
+                const rect = box.getBoundingClientRect();
+                let pos = x - rect.left;
+                if (pos < 0) pos = 0;
+                if (pos > rect.width) pos = rect.width;
+                const percentage = (pos / rect.width) * 100;
+                before.style.width = `${percentage}%`;
+                handle.style.left = `${percentage}%`;
+            };
+
+
+            box.addEventListener('mousedown', (e) => { isDragging = true; updateSlider(e.clientX); });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(e.clientX); });
+            box.addEventListener('touchstart', (e) => { isDragging = true; updateSlider(e.touches[0].clientX); });
+            window.addEventListener('touchend', () => isDragging = false);
+            window.addEventListener('touchmove', (e) => { if (isDragging) updateSlider(e.touches[0].clientX); });
+        }
+
+
+        // --- 11. INITIALIZATION ON LOAD ---
+        window.onload = function() {
+            renderPrinciples();
+            renderShots();
+            renderLenses();
+            renderAngles();
+            initSlider();
+        };
+    </script>
+</body>
+</html>
